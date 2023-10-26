@@ -39,7 +39,7 @@ app.use("/api/Tarea", TareaRouter);
 
 
 // para correr el servidor
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log("Servidor ejecutandose en el puerto 4000");
