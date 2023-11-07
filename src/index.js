@@ -10,6 +10,7 @@ import cors from "cors";
 // creacion de servidor
 const app = express();
 app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
 dotenv.config(); 
 connectDB(); 
 // cors para que se pueda conectar con el front
@@ -33,7 +34,7 @@ app.use(cors({ origin: '*' }))
 // rutas de  la aplicacion
 
 
-app.use("/api/Usuario", UserRouter);
+app.use("/api/usuario", UserRouter);
 app.use("/api/Tarea", TareaRouter);
 
 

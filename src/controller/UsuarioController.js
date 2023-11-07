@@ -1,34 +1,32 @@
-import express from "express";
 import Usuario from "../model/UserModel.js";
 import  bycscript from "bcryptjs";
 
 
 const Registrar = async (req, res) => {
+  try {
   const {  nombre,email, password }= req.body;
   const User= new Usuario({nombre,email,password});
-  // validacion de datos
 
-  // validar correo
+  // validaciones
   const existeCorreo = await Usuario.findOne({ email});
    if (existeCorreo) {
-       return res.status(400).json({
+       return res.json({
+            status: 400,
            msg: "El correo ya existe no se puede crear otro usuario con el mismo correo"
        });
    }
    if (password.length < 6) {
-        return res.status(400).json({
+        return res.json({
+            status: 400,
             msg: "La contraseña debe tener al menos 6 caracteres"
         });
    }
 
-  //encriptar contraseña
    const salt = bycscript.genSaltSync();
    User.password = bycscript.hashSync(password, salt);
-
-// guardar en la base de datos
-   try {
-     const UserDB = User.save();
-       res.status(200).json({
+   const UserDB = User.save();
+       res.json({
+           status: 200,
            msg: "Usuario creado correctamente",
            User
        });
@@ -43,33 +41,31 @@ const Registrar = async (req, res) => {
 };
 
 const ModificarUsuario = async (req, res) => {
-  const { id } = req.params;
-  const { password, ...resto } = req.body;
-
-  // Validar contra base de datos
-  if (password) {
-      const salt = bycscript.genSaltSync();
-      resto.password = bycscript.hashSync(password, salt);
-  }
-
   try {
-      const updatedUser = await Usuario.findByIdAndUpdate(id, resto, { new: true });
-
-      if (!updatedUser) {
-          return res.status(404).json({
-              msg: "Usuario no encontrado"
-          });
-      }
-
-      res.status(200).json({
-          msg: "Usuario modificado correctamente",
-          updatedUser
+    const { id } = req.params;
+    const { password, ...data } = req.body;
+    if (password) {
+      const salt = bycscript.genSaltSync();
+      data.password = bycscript.hashSync(password, salt);
+    }
+    const updatedUser = await Usuario.findByIdAndUpdate(id, data, { new: true });
+    if (!updatedUser) {
+      return res.json({
+        status: 404,
+        msg: "Usuario no encontrado"
       });
+    }
+
+    res.json({
+      status: 200,
+      msg: "Usuario modificado correctamente",
+      updatedUser
+    });
   } catch (error) {
-      res.status(500).json({
-          msg: "Error al modificar el usuario",
-          error
-      });
+    res.status(500).json({
+      msg: "Error al modificar el usuario",
+      error
+    });
   }
 }
 
