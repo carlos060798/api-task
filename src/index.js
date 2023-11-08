@@ -35,7 +35,7 @@ app.use(cors({ origin: '*' }))
 
 
 app.use("/api/usuario", UserRouter);
-app.use("/api/Tarea", TareaRouter);
+app.use("/api/tarea", TareaRouter);
 
 
 

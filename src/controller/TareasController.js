@@ -1,129 +1,123 @@
 import Tarea from "../model/TaskModel.js";
 
 const agregarTarea = async (req, res) => {
-  // llenar datos
-    const task = new Tarea(req.body); 
-    task.usuario = req.body.usuario;
-    // guardar datos
-    try {
-      const Tasksave = await task.save(); 
-      res.json({msg:"tarea creada" ,
-      Tarea:Tasksave});
-    } catch (error) {
-    // cacturar errores
-      console.log(error);
-      res.status(500).send("hubo un error");
-    }
-  };
+  try {
+    // llenar datos
+    const { titulo, descripcion } = req.body; // obtener datos del body
+    if (!titulo || !descripcion)
+      return res.json({ status: 400, msg: "faltan campos" });
+    const task = new Tarea({ titulo, descripcion }); // crear objeto task
+    task.usuario = req.params.id;
 
+    const Tasksave = await task.save();
+    return res.json({
+      status: 200,
+      msg: "tarea creada",
+      Tarea: Tasksave,
+    });
+  } catch (error) {
+    res.send({
+      status: 500,
+      msg: "Error al crear tarea",
+    });
+  }
+};
 
-
-
-  const obtenerTareas = async (req, res) => {
-    try {
-      const usuarioId = req.params.id; // Obtén el ID del usuario de la URL
-  
-      // Encuentra todas las tareas que pertenecen al usuario especificado
-      const tareas = await Tarea.find({ usuario: usuarioId });
-  
-      res.json(tareas);
-    } catch (error) {
-      console.error("Error al obtener las tareas del usuario:", error);
-      res.status(500).json({ msg: "Error al obtener las tareas del usuario" });
-    }
-  };
-  
-  
-  
-  
-  
-  
-  
+const obtenerTareas = async (req, res) => {
+  try {
+    const usuarioId = req.params.id;
+    const tasks = await Tarea.find({ usuario: usuarioId });
+    res.json({
+      status: 200,
+      msg: "tareas del usuario",
+      tasks,
+    });
+  } catch (error) {
+    res.json({
+      status: 500,
+      msg: "Error al obtener las tareas del usuario",
+      error,
+    });
+  }
+};
 
 const obtenerTareaid = async (req, res) => {
-  const { id } = req.params; 
-  const task = await Tarea.findById(id); 
-  if (!task) {
-    // busca el id del task
-    res.status(404).json({ msg: "tarea no encontrado" }); 
-  }
+  try {
+    const { id } = req.params;
+    const task = await Tarea.findById(id);
     res.json({
-      // si el task existe
-      msg: "tarea encontradas",
-      task
+      status: 200,
+      msg: "tarea encontrada",
+      task,
     });
-  
+  } catch (error) {
+    res.json({
+      status: 404,
+      msg: "Error al obtener tarea",
+      error,
+    });
+  }
 };
 
 const actualizarTarea = async (req, res) => {
-  const { id } = req.params; // obtener el id del task
-  console.log(id);
-  const task = await Tarea.findById(id); // obtener task por id
-  if (!task) {
-    res.status(404).json({ msg: "task no encontrado" });
-  }
-  
-  // si  la tarea  existe y el id referenciado es valido
-  // actulizar tarea
-
-  task.titulo = req.body.titulo || task.titulo;
-  task.descripcion = req.body.descripcion || task.descripcion;
- 
-
   try {
+    const { id } = req.params;
+    const { titulo, descripcion, fecha } = req.body; // obtener datos del body
+
+    const task = await Tarea.findById(id);
+    task.titulo = titulo || task.titulo;
+    task.descripcion = descripcion || task.descripcion;
+    task.fecha = fecha || task.fecha;
     const taskActualizada = await task.save();
     res.json({
-      msg:"Tarea actualizada ",
-      Tarea:taskActualizada});
+      msg: "Tarea actualizada ",
+      Tarea: taskActualizada,
+    });
   } catch (err) {
-    console.log(err);
-  }3
+    res.json({
+      status: 404,
+      msg: "Error al actualizar la tarea , no se encontro tarea",
+      err,
+    });
+  }
+  3;
 };
 
-const eliminarTarea= async (req, res) => {
-  // eliminar task
-  const { id } = req.params; // obtener el id del task
-  const task = await Tarea.findById(id); // obtener task por id
-  if (!task) {
-    res.status(404).json({ msg: "tarea no encontrada" });
-  }
-
-
-  // si  la tarea  existe y el id referenciado es valido
-
+const eliminarTarea = async (req, res) => {
   try {
+    const { id } = req.params; // obtener el id del task
+    const task = await Tarea.findById(id); // obtener task por id
+
+
     await task.deleteOne();
-    res.json({ msg: "task eliminado" });
+    res.json({ status: 200, msg: "tarea  eliminada correctamente" });
   } catch (error) {
-    console.error(error);
+    res.json({ status: 404, msg: "error al eliminar tarea no se encontro ", error });
   }
 };
-
 
 const cambiarEstadoTarea = async (req, res) => {
-  const { id } = req.params; // obtener el id del task
-  console.log(id);
-  const task = await Tarea.findById(id); // obtener task por id
-  if (!task) {
-    res.status(404).json({ msg: "task no encontrado" });
-  }
-  
-  // si  la tarea  existe y el id referenciado es valido
-  // actulizar tarea
-
-  task.complete = "completada";
- 
-
   try {
+    const { id } = req.params;
+
+    const task = await Tarea.findById(id);
+
+
+    task.complete = "completada";
     const taskcomplete = await task.save();
     res.json({
-      msg:"Tarea actualizada ",
-      Tarea:taskcomplete});
+      status: 200,
+      msg: "Tarea actualizada ",
+      Tarea: taskcomplete,
+    });
   } catch (err) {
-    console.log(err);
+    res.json({
+      status: 404,
+      msg: "Error al actualizar tarea",
+      err,
+    });
   }
-   
-}
+};
 
 export {
   agregarTarea,
@@ -131,6 +125,5 @@ export {
   actualizarTarea,
   obtenerTareas,
   obtenerTareaid,
-  cambiarEstadoTarea
-
-} 
+  cambiarEstadoTarea,
+};

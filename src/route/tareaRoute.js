@@ -12,14 +12,14 @@ const router = express.Router();
 
 
 router
-  .route("/")
-  .post(agregarTarea)
+
   
   router.get("/usuario/:id", obtenerTareas);
 
   // operaciones del crud 
   router
     .route("/:id")
+    .post(agregarTarea)
     .get(obtenerTareaid)
     .put(actualizarTarea)
     .delete(eliminarTarea)
