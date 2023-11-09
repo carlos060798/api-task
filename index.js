@@ -1,9 +1,9 @@
 import express  from "express"; 
 
 import dotenv from "dotenv";
-import connectDB from "./db/bd.js";
-import UserRouter from "./route/userRouter.js";
-import TareaRouter from "./route/tareaRoute.js";
+import connectDB from "./src/db/bd.js";
+import UserRouter from "./src/route/userRouter.js";
+import TareaRouter from "./src/route/tareaRoute.js";
 import cors from "cors";
 
 

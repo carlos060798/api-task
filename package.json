@@ -5,8 +5,8 @@
   "description": "backend de gestor de tareas",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js",
-    "dev": "nodemon src/index.js",
+    "start": "nodemon index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "carlos danilo angarita",
